@@ -14,7 +14,14 @@ export default function InsightsPage() {
       }}
     >
       <InsightCards />
-      <div style={{ display: "grid", gridTemplateColumns: "3fr 2fr", gap: 12 }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "3fr 2fr",
+          gap: 12,
+          alignItems: "start", // ✅ stops grid from stretching children to equal height
+        }}
+      >
         <MonthlyComparisonChart />
         <CategorySpendingBar />
       </div>

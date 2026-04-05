@@ -21,8 +21,8 @@ export default function EmptyState({
             width: 48,
             height: 48,
             borderRadius: 12,
-            background: "rgba(255,255,255,0.04)",
-            border: "0.5px solid rgba(255,255,255,0.08)",
+            background: "var(--bg2)",
+            border: "0.5px solid var(--border)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -32,13 +32,13 @@ export default function EmptyState({
           {icon}
         </div>
       )}
-      <div style={{ fontSize: 14, fontWeight: 500, color: "#E8EAF0" }}>
+      <div style={{ fontSize: 14, fontWeight: 500, color: "var(--text)" }}>
         {title}
       </div>
       <div
         style={{
           fontSize: 13,
-          color: "rgba(232,234,240,0.35)",
+          color: "var(--text3)",
           maxWidth: 260,
           lineHeight: 1.5,
         }}

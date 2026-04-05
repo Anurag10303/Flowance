@@ -1,8 +1,9 @@
 import { useLocation } from "react-router-dom";
 import useFinanceStore from "../../store/useFinanceStore";
 import { exportToCSV } from "../../utils/exportCSV";
+import { useTheme } from "../../context/ThemeContext";
 
-const PAGE_TITLES = {
+const TITLES = {
   "/dashboard": "Dashboard",
   "/transactions": "Transactions",
   "/insights": "Insights",
@@ -10,22 +11,30 @@ const PAGE_TITLES = {
 
 export default function Header() {
   const location = useLocation();
-  const title = PAGE_TITLES[location.pathname] || "Flowance";
   const { filters, setFilter, role, getFilteredTransactions } =
     useFinanceStore();
+  const { dark } = useTheme();
+
+  const bdr = dark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.08)";
+  const bg = dark ? "#080B14" : "#F8F7F4";
+  const txt = dark ? "#F0EEE8" : "#111";
+  const muted = dark ? "rgba(240,238,232,0.4)" : "#888";
+  const inp = dark ? "#0D1120" : "#fff";
+  const accent = dark ? "#6EE7B7" : "#059669";
 
   return (
     <header
       style={{
         padding: "0 24px",
         height: 56,
-        borderBottom: "0.5px solid rgba(255,255,255,0.07)",
+        borderBottom: `0.5px solid ${bdr}`,
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        background: "#080B14",
+        background: bg,
         flexShrink: 0,
         gap: 12,
+        transition: "background 0.3s",
       }}
     >
       <span
@@ -33,12 +42,12 @@ export default function Header() {
           fontFamily: "Syne, sans-serif",
           fontWeight: 800,
           fontSize: 17,
-          color: "#fff",
+          color: txt,
           letterSpacing: "-0.3px",
           whiteSpace: "nowrap",
         }}
       >
-        {title}
+        {TITLES[location.pathname] || "Flowance"}
       </span>
 
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -54,7 +63,7 @@ export default function Header() {
                 left: 10,
                 top: "50%",
                 transform: "translateY(-50%)",
-                color: "rgba(232,234,240,0.25)",
+                color: muted,
                 pointerEvents: "none",
               }}
             >
@@ -75,24 +84,27 @@ export default function Header() {
             <input
               value={filters.search}
               onChange={(e) => setFilter("search", e.target.value)}
-              placeholder="Search transactions..."
+              placeholder="Search..."
               style={{
-                background: "#0D1120",
-                border: "0.5px solid rgba(255,255,255,0.1)",
-                borderRadius: 8,
+                background: inp,
+                border: `0.5px solid ${bdr}`,
+                borderRadius: 9,
                 padding: "7px 12px 7px 30px",
                 fontSize: 13,
-                color: "#E8EAF0",
+                color: txt,
                 fontFamily: "DM Sans, sans-serif",
-                width: 200,
+                width: 180,
                 outline: "none",
+                transition: "all 0.2s",
               }}
-              onFocus={(e) =>
-                (e.target.style.borderColor = "rgba(110,231,183,0.4)")
-              }
-              onBlur={(e) =>
-                (e.target.style.borderColor = "rgba(255,255,255,0.1)")
-              }
+              onFocus={(e) => {
+                e.target.style.borderColor = accent;
+                e.target.style.boxShadow = `0 0 0 3px ${dark ? "rgba(110,231,183,0.1)" : "rgba(5,150,105,0.1)"}`;
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = bdr;
+                e.target.style.boxShadow = "none";
+              }}
             />
           </div>
         )}
@@ -105,22 +117,24 @@ export default function Header() {
               alignItems: "center",
               gap: 6,
               background: "transparent",
-              border: "0.5px solid rgba(255,255,255,0.1)",
-              borderRadius: 8,
+              border: `0.5px solid ${bdr}`,
+              borderRadius: 9,
               padding: "6px 12px",
               fontSize: 12,
-              color: "rgba(232,234,240,0.5)",
-              fontFamily: "DM Sans, sans-serif",
+              color: muted,
               cursor: "pointer",
+              transition: "all 0.15s",
               whiteSpace: "nowrap",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = "rgba(255,255,255,0.25)";
-              e.currentTarget.style.color = "#E8EAF0";
+              e.currentTarget.style.borderColor = dark
+                ? "rgba(255,255,255,0.2)"
+                : "rgba(0,0,0,0.2)";
+              e.currentTarget.style.color = txt;
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
-              e.currentTarget.style.color = "rgba(232,234,240,0.5)";
+              e.currentTarget.style.borderColor = bdr;
+              e.currentTarget.style.color = muted;
             }}
           >
             <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
@@ -147,14 +161,14 @@ export default function Header() {
             width: 30,
             height: 30,
             borderRadius: "50%",
-            background: "rgba(110,231,183,0.12)",
-            border: "0.5px solid rgba(110,231,183,0.2)",
+            background: dark ? "rgba(110,231,183,0.12)" : "rgba(5,150,105,0.1)",
+            border: `0.5px solid ${dark ? "rgba(110,231,183,0.2)" : "rgba(5,150,105,0.2)"}`,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             fontSize: 11,
-            fontWeight: 500,
-            color: "#6EE7B7",
+            fontWeight: 600,
+            color: accent,
             flexShrink: 0,
           }}
         >

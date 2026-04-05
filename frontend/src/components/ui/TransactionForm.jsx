@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CATEGORIES } from "../../data/mockTransaction";
+import { CATEGORIES } from "../../data/mockTransactions";
 
 const EMPTY = {
   description: "",
@@ -18,67 +18,52 @@ export default function TransactionForm({
   const [form, setForm] = useState({ ...EMPTY, ...initial });
   const [errors, setErrors] = useState({});
 
-  const set = (key, val) => {
-    setForm((f) => ({ ...f, [key]: val }));
-    setErrors((e) => ({ ...e, [key]: "" }));
+  const set = (k, v) => {
+    setForm((f) => ({ ...f, [k]: v }));
+    setErrors((e) => ({ ...e, [k]: "" }));
   };
-
   const validate = () => {
-    const errs = {};
-    if (!form.description.trim()) errs.description = "Required";
+    const e = {};
+    if (!form.description.trim()) e.description = "Required";
     if (!form.amount || isNaN(form.amount) || Number(form.amount) <= 0)
-      errs.amount = "Enter a valid amount";
-    if (!form.date) errs.date = "Required";
-    return errs;
+      e.amount = "Enter a valid amount";
+    if (!form.date) e.date = "Required";
+    return e;
   };
-
   const handleSubmit = () => {
-    const errs = validate();
-    if (Object.keys(errs).length) {
-      setErrors(errs);
+    const e = validate();
+    if (Object.keys(e).length) {
+      setErrors(e);
       return;
     }
     onSubmit({ ...form, amount: parseFloat(form.amount) });
   };
 
-  const label = {
+  const lbl = {
     display: "block",
     fontSize: 11,
-    color: "rgba(232,234,240,0.35)",
+    color: "var(--text3)",
     textTransform: "uppercase",
     letterSpacing: "0.6px",
     marginBottom: 6,
   };
-  const input = (err) => ({
+  const inp = (err) => ({
     width: "100%",
-    background: "#161C2E",
-    border: `0.5px solid ${err ? "#F87171" : "rgba(255,255,255,0.1)"}`,
-    borderRadius: 8,
+    background: "var(--card2)",
+    border: `0.5px solid ${err ? "var(--red)" : "var(--border2)"}`,
+    borderRadius: 9,
     padding: "9px 12px",
     fontSize: 13,
-    color: "#E8EAF0",
-    fontFamily: "DM Sans, sans-serif",
+    color: "var(--text)",
     outline: "none",
-    transition: "border-color 0.15s",
+    transition: "all 0.15s",
+    fontFamily: "DM Sans, sans-serif",
   });
-  const errMsg = (key) =>
-    errors[key] ? (
-      <span
-        style={{
-          fontSize: 11,
-          color: "#F87171",
-          marginTop: 4,
-          display: "block",
-        }}
-      >
-        {errors[key]}
-      </span>
-    ) : null;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
       <div>
-        <label style={label}>Type</label>
+        <label style={lbl}>Type</label>
         <div style={{ display: "flex", gap: 6 }}>
           {["income", "expense"].map((t) => (
             <button
@@ -86,31 +71,32 @@ export default function TransactionForm({
               onClick={() => set("type", t)}
               style={{
                 flex: 1,
-                padding: "8px 0",
-                borderRadius: 8,
+                padding: "9px 0",
+                borderRadius: 9,
                 fontSize: 13,
                 fontFamily: "DM Sans, sans-serif",
                 cursor: "pointer",
+                transition: "all 0.2s",
+                textTransform: "capitalize",
+                fontWeight: form.type === t ? 500 : 400,
                 border:
                   form.type === t
                     ? t === "income"
-                      ? "0.5px solid rgba(110,231,183,0.5)"
-                      : "0.5px solid rgba(248,113,113,0.5)"
-                    : "0.5px solid rgba(255,255,255,0.08)",
+                      ? "0.5px solid var(--accent)"
+                      : "0.5px solid var(--red)"
+                    : "0.5px solid var(--border)",
                 background:
                   form.type === t
                     ? t === "income"
-                      ? "rgba(110,231,183,0.1)"
-                      : "rgba(248,113,113,0.1)"
+                      ? "var(--accent-bg)"
+                      : "var(--red-bg)"
                     : "transparent",
                 color:
                   form.type === t
                     ? t === "income"
-                      ? "#6EE7B7"
-                      : "#F87171"
-                    : "rgba(232,234,240,0.35)",
-                textTransform: "capitalize",
-                transition: "all 0.15s",
+                      ? "var(--accent)"
+                      : "var(--red)"
+                    : "var(--text2)",
               }}
             >
               {t}
@@ -120,78 +106,121 @@ export default function TransactionForm({
       </div>
 
       <div>
-        <label style={label}>Description</label>
+        <label style={lbl}>Description</label>
         <input
-          style={input(errors.description)}
+          style={inp(errors.description)}
           value={form.description}
           onChange={(e) => set("description", e.target.value)}
           placeholder="e.g. Swiggy order"
-          onFocus={(e) =>
-            (e.target.style.borderColor = "rgba(110,231,183,0.4)")
-          }
-          onBlur={(e) =>
-            (e.target.style.borderColor = errors.description
-              ? "#F87171"
-              : "rgba(255,255,255,0.1)")
-          }
+          onFocus={(e) => {
+            e.target.style.borderColor = "var(--accent)";
+            e.target.style.boxShadow = "0 0 0 3px var(--accent-bg)";
+          }}
+          onBlur={(e) => {
+            e.target.style.borderColor = errors.description
+              ? "var(--red)"
+              : "var(--border2)";
+            e.target.style.boxShadow = "none";
+          }}
         />
-        {errMsg("description")}
+        {errors.description && (
+          <span
+            style={{
+              fontSize: 11,
+              color: "var(--red)",
+              marginTop: 4,
+              display: "block",
+            }}
+          >
+            {errors.description}
+          </span>
+        )}
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
         <div>
-          <label style={label}>Amount (₹)</label>
+          <label style={lbl}>Amount (₹)</label>
           <input
-            style={input(errors.amount)}
+            style={inp(errors.amount)}
             value={form.amount}
             onChange={(e) => set("amount", e.target.value)}
             placeholder="0"
             type="number"
             min="0"
-            onFocus={(e) =>
-              (e.target.style.borderColor = "rgba(110,231,183,0.4)")
-            }
-            onBlur={(e) =>
-              (e.target.style.borderColor = errors.amount
-                ? "#F87171"
-                : "rgba(255,255,255,0.1)")
-            }
+            onFocus={(e) => {
+              e.target.style.borderColor = "var(--accent)";
+              e.target.style.boxShadow = "0 0 0 3px var(--accent-bg)";
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = errors.amount
+                ? "var(--red)"
+                : "var(--border2)";
+              e.target.style.boxShadow = "none";
+            }}
           />
-          {errMsg("amount")}
+          {errors.amount && (
+            <span
+              style={{
+                fontSize: 11,
+                color: "var(--red)",
+                marginTop: 4,
+                display: "block",
+              }}
+            >
+              {errors.amount}
+            </span>
+          )}
         </div>
         <div>
-          <label style={label}>Date</label>
+          <label style={lbl}>Date</label>
           <input
-            style={{ ...input(errors.date), colorScheme: "dark" }}
+            style={{ ...inp(errors.date), colorScheme: "light dark" }}
             value={form.date}
             onChange={(e) => set("date", e.target.value)}
             type="date"
-            onFocus={(e) =>
-              (e.target.style.borderColor = "rgba(110,231,183,0.4)")
-            }
-            onBlur={(e) =>
-              (e.target.style.borderColor = errors.date
-                ? "#F87171"
-                : "rgba(255,255,255,0.1)")
-            }
+            onFocus={(e) => {
+              e.target.style.borderColor = "var(--accent)";
+              e.target.style.boxShadow = "0 0 0 3px var(--accent-bg)";
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = errors.date
+                ? "var(--red)"
+                : "var(--border2)";
+              e.target.style.boxShadow = "none";
+            }}
           />
-          {errMsg("date")}
+          {errors.date && (
+            <span
+              style={{
+                fontSize: 11,
+                color: "var(--red)",
+                marginTop: 4,
+                display: "block",
+              }}
+            >
+              {errors.date}
+            </span>
+          )}
         </div>
       </div>
 
       <div>
-        <label style={label}>Category</label>
+        <label style={lbl}>Category</label>
         <select
-          style={{ ...input(false), cursor: "pointer" }}
+          style={{ ...inp(false), cursor: "pointer" }}
           value={form.category}
           onChange={(e) => set("category", e.target.value)}
-          onFocus={(e) =>
-            (e.target.style.borderColor = "rgba(110,231,183,0.4)")
-          }
-          onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.1)")}
+          onFocus={(e) => {
+            e.target.style.borderColor = "var(--accent)";
+            e.target.style.boxShadow = "0 0 0 3px var(--accent-bg)";
+          }}
+          onBlur={(e) => {
+            e.target.style.borderColor = "var(--border2)";
+            e.target.style.boxShadow = "none";
+          }}
         >
           {CATEGORIES.filter((c) => c !== "Income").map((c) => (
-            <option key={c} value={c} style={{ background: "#161C2E" }}>
+            <option key={c} value={c} style={{ background: "var(--card2)" }}>
               {c}
             </option>
           ))}
@@ -204,13 +233,22 @@ export default function TransactionForm({
           style={{
             flex: 1,
             padding: "10px 0",
-            borderRadius: 8,
+            borderRadius: 9,
             fontSize: 13,
             background: "transparent",
-            border: "0.5px solid rgba(255,255,255,0.1)",
-            color: "rgba(232,234,240,0.4)",
+            border: "0.5px solid var(--border)",
+            color: "var(--text2)",
             fontFamily: "DM Sans, sans-serif",
             cursor: "pointer",
+            transition: "all 0.15s",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = "var(--border2)";
+            e.currentTarget.style.color = "var(--text)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = "var(--border)";
+            e.currentTarget.style.color = "var(--text2)";
           }}
         >
           Cancel
@@ -220,14 +258,23 @@ export default function TransactionForm({
           style={{
             flex: 1,
             padding: "10px 0",
-            borderRadius: 8,
+            borderRadius: 9,
             fontSize: 13,
-            background: "#6EE7B7",
-            color: "#080B14",
+            background: "var(--accent)",
+            color: "var(--bg)",
             border: "none",
-            fontWeight: 500,
+            fontWeight: 600,
             fontFamily: "DM Sans, sans-serif",
             cursor: "pointer",
+            transition: "all 0.15s",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.opacity = "0.88";
+            e.currentTarget.style.transform = "translateY(-1px)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.opacity = "1";
+            e.currentTarget.style.transform = "translateY(0)";
           }}
         >
           {submitLabel}

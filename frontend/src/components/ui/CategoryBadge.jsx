@@ -1,10 +1,31 @@
-import { CATEGORY_COLORS } from "../../data/mockTransaction";
+import { useTheme } from "../../context/ThemeContext";
+
+const DARK = {
+  Food: "#FBBF24",
+  Housing: "#818CF8",
+  Travel: "#38BDF8",
+  Shopping: "#F87171",
+  Healthcare: "#34D399",
+  Entertainment: "#A78BFA",
+  Education: "#FB923C",
+  Utilities: "#9CA3AF",
+  Income: "#6EE7B7",
+};
+const LIGHT = {
+  Food: "#92690A",
+  Housing: "#4338CA",
+  Travel: "#0369A1",
+  Shopping: "#B91C1C",
+  Healthcare: "#065F46",
+  Entertainment: "#6D28D9",
+  Education: "#C2410C",
+  Utilities: "#374151",
+  Income: "#065F46",
+};
 
 export default function CategoryBadge({ category }) {
-  const colors = CATEGORY_COLORS[category] || {
-    bg: "rgba(255,255,255,0.08)",
-    text: "rgba(232,234,240,0.5)",
-  };
+  const { dark } = useTheme();
+  const color = dark ? DARK[category] || "#888" : LIGHT[category] || "#555";
   return (
     <span
       style={{
@@ -13,8 +34,8 @@ export default function CategoryBadge({ category }) {
         borderRadius: 100,
         fontSize: 11,
         fontWeight: 500,
-        background: colors.bg,
-        color: colors.text,
+        background: color + "18",
+        color,
         whiteSpace: "nowrap",
       }}
     >

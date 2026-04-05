@@ -2,11 +2,11 @@ import { useEffect } from "react";
 
 export default function Modal({ title, onClose, children, width = 420 }) {
   useEffect(() => {
-    const handler = (e) => {
+    const h = (e) => {
       if (e.key === "Escape") onClose();
     };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
+    window.addEventListener("keydown", h);
+    return () => window.removeEventListener("keydown", h);
   }, [onClose]);
 
   return (
@@ -17,7 +17,8 @@ export default function Modal({ title, onClose, children, width = 420 }) {
       style={{
         position: "fixed",
         inset: 0,
-        background: "rgba(0,0,0,0.65)",
+        background: "rgba(0,0,0,0.5)",
+        backdropFilter: "blur(6px)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -26,14 +27,15 @@ export default function Modal({ title, onClose, children, width = 420 }) {
       }}
     >
       <div
-        className="animate-pop"
+        className="animate-scale-in"
         style={{
-          background: "#0D1120",
-          border: "0.5px solid rgba(255,255,255,0.12)",
-          borderRadius: 16,
+          background: "var(--card)",
+          border: "0.5px solid var(--border2)",
+          borderRadius: 18,
           padding: 24,
           width: "100%",
           maxWidth: width,
+          boxShadow: "var(--shadow-lg)",
         }}
       >
         <div
@@ -49,7 +51,7 @@ export default function Modal({ title, onClose, children, width = 420 }) {
               fontFamily: "Syne, sans-serif",
               fontWeight: 800,
               fontSize: 16,
-              color: "#fff",
+              color: "var(--text)",
             }}
           >
             {title}
@@ -59,16 +61,15 @@ export default function Modal({ title, onClose, children, width = 420 }) {
             style={{
               background: "transparent",
               border: "none",
-              color: "rgba(232,234,240,0.3)",
-              fontSize: 20,
+              color: "var(--text3)",
+              fontSize: 22,
               lineHeight: 1,
               cursor: "pointer",
               padding: "0 4px",
+              transition: "color 0.15s",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = "#E8EAF0")}
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.color = "rgba(232,234,240,0.3)")
-            }
+            onMouseEnter={(e) => (e.currentTarget.style.color = "var(--text)")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text3)")}
           >
             ×
           </button>

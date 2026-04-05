@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { mockTransactions } from "../data/mockTransaction";
+import { mockTransactions } from "../data/mockTransactions";
 import { v4 as uuidv4 } from "uuid";
 
 const useFinanceStore = create(

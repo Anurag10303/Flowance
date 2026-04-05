@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import useFinanceStore from "../../store/useFinanceStore";
+import { useTheme } from "../../context/ThemeContext";
 
 const NAV = [
   {
@@ -34,7 +35,7 @@ const NAV = [
     icon: (
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
         <path
-          d="M2 12 L5 7 L8 9 L11 4 L14 6"
+          d="M2 12L5 7L8 9L11 4L14 6"
           stroke="currentColor"
           strokeWidth="1.5"
           strokeLinecap="round"
@@ -47,27 +48,37 @@ const NAV = [
 
 export default function Sidebar() {
   const { role, setRole } = useFinanceStore();
+  const { dark, toggle } = useTheme();
   const navigate = useNavigate();
+
+  const bg = dark ? "#0A0E1A" : "#F4F2EE";
+  const bdr = dark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.08)";
+  const txt = dark ? "#F0EEE8" : "#111";
+  const muted = dark ? "rgba(240,238,232,0.35)" : "#888";
+  const accent = dark ? "#6EE7B7" : "#059669";
+  const surf = dark ? "#161C2E" : "#E8E6E0";
 
   return (
     <aside
       style={{
         width: 220,
         minWidth: 220,
-        background: "#0A0E1A",
-        borderRight: "0.5px solid rgba(255,255,255,0.07)",
+        background: bg,
+        borderRight: `0.5px solid ${bdr}`,
         display: "flex",
         flexDirection: "column",
         height: "100vh",
         position: "sticky",
         top: 0,
+        transition: "background 0.3s",
       }}
     >
+      {/* Logo */}
       <div
         onClick={() => navigate("/")}
         style={{
           padding: "20px 20px 18px",
-          borderBottom: "0.5px solid rgba(255,255,255,0.06)",
+          borderBottom: `0.5px solid ${bdr}`,
           cursor: "pointer",
           userSelect: "none",
         }}
@@ -77,14 +88,15 @@ export default function Sidebar() {
             fontFamily: "Syne, sans-serif",
             fontWeight: 800,
             fontSize: 18,
-            color: "#fff",
+            color: txt,
             letterSpacing: "-0.5px",
           }}
         >
-          Flow<span style={{ color: "#6EE7B7" }}>ance</span>
+          Flow<span style={{ color: accent }}>ance</span>
         </span>
       </div>
 
+      {/* Nav links */}
       <nav style={{ padding: "12px 10px", flex: 1 }}>
         {NAV.map(({ to, label, icon }) => (
           <NavLink
@@ -95,14 +107,22 @@ export default function Sidebar() {
               alignItems: "center",
               gap: 10,
               padding: "9px 12px",
-              borderRadius: 8,
+              borderRadius: 9,
               fontSize: 13,
               fontFamily: "DM Sans, sans-serif",
-              color: isActive ? "#6EE7B7" : "rgba(232,234,240,0.45)",
-              background: isActive ? "rgba(110,231,183,0.07)" : "transparent",
+              fontWeight: isActive ? 500 : 400,
+              color: isActive ? accent : muted,
+              background: isActive
+                ? dark
+                  ? "rgba(110,231,183,0.08)"
+                  : "rgba(5,150,105,0.08)"
+                : "transparent",
               textDecoration: "none",
               marginBottom: 2,
-              transition: "all 0.15s",
+              transition: "all 0.2s cubic-bezier(0.16,1,0.3,1)",
+              borderLeft: isActive
+                ? `2px solid ${accent}`
+                : "2px solid transparent",
             })}
           >
             <span style={{ display: "flex" }}>{icon}</span>
@@ -111,23 +131,56 @@ export default function Sidebar() {
         ))}
       </nav>
 
+      {/* Bottom */}
       <div
         style={{
-          padding: "14px 10px",
-          borderTop: "0.5px solid rgba(255,255,255,0.06)",
+          padding: "12px 10px",
+          borderTop: `0.5px solid ${bdr}`,
+          display: "flex",
+          flexDirection: "column",
+          gap: 6,
         }}
       >
-        <div
+        {/* Theme toggle */}
+        <button
+          onClick={toggle}
           style={{
-            background: "#161C2E",
-            borderRadius: 10,
-            padding: "10px 12px",
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            width: "100%",
+            padding: "9px 12px",
+            borderRadius: 9,
+            fontSize: 13,
+            fontFamily: "DM Sans, sans-serif",
+            background: "transparent",
+            border: "none",
+            color: muted,
+            cursor: "pointer",
+            transition: "all 0.15s",
+            textAlign: "left",
           }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = surf;
+            e.currentTarget.style.color = txt;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "transparent";
+            e.currentTarget.style.color = muted;
+          }}
+        >
+          <span style={{ fontSize: 16 }}>{dark ? "☀️" : "🌙"}</span>
+          {dark ? "Light mode" : "Dark mode"}
+        </button>
+
+        {/* Role switcher */}
+        <div
+          style={{ background: surf, borderRadius: 10, padding: "10px 12px" }}
         >
           <div
             style={{
-              fontSize: 11,
-              color: "rgba(232,234,240,0.3)",
+              fontSize: 10,
+              color: muted,
               textTransform: "uppercase",
               letterSpacing: "0.8px",
               marginBottom: 8,
@@ -143,19 +196,24 @@ export default function Sidebar() {
                 style={{
                   flex: 1,
                   padding: "6px 0",
-                  borderRadius: 6,
+                  borderRadius: 7,
                   fontSize: 12,
                   fontFamily: "DM Sans, sans-serif",
+                  cursor: "pointer",
+                  textTransform: "capitalize",
+                  transition: "all 0.2s",
+                  fontWeight: role === r ? 500 : 400,
                   border:
                     role === r
-                      ? "0.5px solid rgba(110,231,183,0.4)"
-                      : "0.5px solid rgba(255,255,255,0.08)",
+                      ? `0.5px solid ${dark ? "rgba(110,231,183,0.4)" : "rgba(5,150,105,0.4)"}`
+                      : "0.5px solid transparent",
                   background:
-                    role === r ? "rgba(110,231,183,0.1)" : "transparent",
-                  color: role === r ? "#6EE7B7" : "rgba(232,234,240,0.35)",
-                  cursor: "pointer",
-                  transition: "all 0.15s",
-                  textTransform: "capitalize",
+                    role === r
+                      ? dark
+                        ? "rgba(110,231,183,0.1)"
+                        : "rgba(5,150,105,0.1)"
+                      : "transparent",
+                  color: role === r ? accent : muted,
                 }}
               >
                 {r}
@@ -166,7 +224,7 @@ export default function Sidebar() {
             style={{
               marginTop: 8,
               fontSize: 11,
-              color: "rgba(232,234,240,0.2)",
+              color: muted,
               lineHeight: 1.4,
             }}
           >

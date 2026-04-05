@@ -1,5 +1,5 @@
 import useFinanceStore from "../../store/useFinanceStore";
-import { CATEGORIES } from "../../data/mockTransaction";
+import { CATEGORIES } from "../../data/mockTransactions";
 import { formatMonth } from "../../utils/formatter";
 
 function Chip({ label, active, onClick }) {
@@ -12,13 +12,14 @@ function Chip({ label, active, onClick }) {
         fontSize: 12,
         fontFamily: "DM Sans, sans-serif",
         cursor: "pointer",
-        border: active
-          ? "0.5px solid rgba(110,231,183,0.45)"
-          : "0.5px solid rgba(255,255,255,0.08)",
-        background: active ? "rgba(110,231,183,0.08)" : "#0D1120",
-        color: active ? "#6EE7B7" : "rgba(232,234,240,0.4)",
-        transition: "all 0.15s",
         whiteSpace: "nowrap",
+        transition: "all 0.2s",
+        fontWeight: active ? 500 : 400,
+        border: active
+          ? "0.5px solid var(--accent)"
+          : "0.5px solid transparent",
+        background: active ? "var(--accent-bg)" : "transparent",
+        color: active ? "var(--accent)" : "var(--text2)",
       }}
     >
       {label}
@@ -26,28 +27,36 @@ function Chip({ label, active, onClick }) {
   );
 }
 
-function Select({ value, onChange, children }) {
+function Sel({ value, onChange, children }) {
   return (
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
       style={{
-        background: "#0D1120",
-        border: "0.5px solid rgba(255,255,255,0.08)",
+        background: "transparent",
+        border:
+          value !== "all"
+            ? "0.5px solid var(--accent)"
+            : "0.5px solid var(--border)",
         borderRadius: 100,
         padding: "5px 28px 5px 14px",
         fontSize: 12,
-        color: value !== "all" ? "#6EE7B7" : "rgba(232,234,240,0.4)",
+        color: value !== "all" ? "var(--accent)" : "var(--text2)",
         fontFamily: "DM Sans, sans-serif",
         cursor: "pointer",
         outline: "none",
         appearance: "none",
-        backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='rgba(232,234,240,0.3)' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`,
+        backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23888' stroke-width='1.2' stroke-linecap='round'/%3E%3C/svg%3E")`,
         backgroundRepeat: "no-repeat",
         backgroundPosition: "right 10px center",
+        fontWeight: value !== "all" ? 500 : 400,
+        transition: "all 0.2s",
       }}
-      onFocus={(e) => (e.target.style.borderColor = "rgba(110,231,183,0.4)")}
-      onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.08)")}
+      onFocus={(e) => (e.target.style.borderColor = "var(--accent)")}
+      onBlur={(e) =>
+        (e.target.style.borderColor =
+          value !== "all" ? "var(--accent)" : "var(--border)")
+      }
     >
       {children}
     </select>
@@ -58,7 +67,7 @@ export default function FilterBar() {
   const { filters, setFilter, resetFilters, getAvailableMonths } =
     useFinanceStore();
   const months = getAvailableMonths();
-  const hasActiveFilters =
+  const hasActive =
     filters.type !== "all" ||
     filters.category !== "all" ||
     filters.month !== "all";
@@ -68,9 +77,9 @@ export default function FilterBar() {
       style={{
         display: "flex",
         alignItems: "center",
-        gap: 8,
+        gap: 6,
         flexWrap: "wrap",
-        marginBottom: 14,
+        paddingBottom: 14,
       }}
     >
       <Chip
@@ -88,56 +97,55 @@ export default function FilterBar() {
         active={filters.type === "expense"}
         onClick={() => setFilter("type", "expense")}
       />
+
       <div
         style={{
           width: "0.5px",
           height: 18,
-          background: "rgba(255,255,255,0.08)",
-          margin: "0 2px",
+          background: "var(--border)",
+          margin: "0 4px",
         }}
       />
-      <Select
-        value={filters.category}
-        onChange={(v) => setFilter("category", v)}
-      >
-        <option value="all" style={{ background: "#161C2E" }}>
+
+      <Sel value={filters.category} onChange={(v) => setFilter("category", v)}>
+        <option value="all" style={{ background: "var(--card2)" }}>
           All categories
         </option>
         {CATEGORIES.map((c) => (
-          <option key={c} value={c} style={{ background: "#161C2E" }}>
+          <option key={c} value={c} style={{ background: "var(--card2)" }}>
             {c}
           </option>
         ))}
-      </Select>
-      <Select value={filters.month} onChange={(v) => setFilter("month", v)}>
-        <option value="all" style={{ background: "#161C2E" }}>
+      </Sel>
+
+      <Sel value={filters.month} onChange={(v) => setFilter("month", v)}>
+        <option value="all" style={{ background: "var(--card2)" }}>
           All months
         </option>
         {months.map((m) => (
-          <option key={m} value={m} style={{ background: "#161C2E" }}>
+          <option key={m} value={m} style={{ background: "var(--card2)" }}>
             {formatMonth(m)}
           </option>
         ))}
-      </Select>
-      {hasActiveFilters && (
+      </Sel>
+
+      {hasActive && (
         <button
           onClick={resetFilters}
           style={{
             background: "transparent",
             border: "none",
             fontSize: 12,
-            color: "rgba(232,234,240,0.3)",
+            color: "var(--text3)",
             cursor: "pointer",
             fontFamily: "DM Sans, sans-serif",
             padding: "5px 8px",
             transition: "color 0.15s",
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = "#F87171")}
-          onMouseLeave={(e) =>
-            (e.currentTarget.style.color = "rgba(232,234,240,0.3)")
-          }
+          onMouseEnter={(e) => (e.currentTarget.style.color = "var(--red)")}
+          onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text3)")}
         >
-          Clear filters ×
+          Clear ×
         </button>
       )}
     </div>

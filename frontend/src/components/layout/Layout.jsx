@@ -9,8 +9,9 @@ export default function Layout({ children }) {
       style={{
         display: "flex",
         height: "100vh",
-        background: "#080B14",
+        background: "var(--bg)",
         overflow: "hidden",
+        transition: "background 0.3s",
       }}
     >
       <Sidebar />
@@ -27,7 +28,13 @@ export default function Layout({ children }) {
         <main
           key={location.pathname}
           className="page-enter"
-          style={{ flex: 1, overflowY: "auto", padding: "20px 24px" }}
+          style={{
+            flex: 1,
+            overflowY: "auto",
+            padding: "22px 26px",
+            background: "var(--bg)",
+            transition: "background 0.3s",
+          }}
         >
           {children}
         </main>
