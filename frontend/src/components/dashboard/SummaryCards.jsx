@@ -30,7 +30,7 @@ function Card({ label, value, sub, accent, icon, delay }) {
   const [hov, setHov] = useState(false);
   return (
     <div
-      className={`animate-fade-up stagger-${delay}`}
+      className={`animate-fade-up stagger-${delay} summary-card`}
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
       style={{
@@ -96,14 +96,7 @@ export default function SummaryCards() {
       : null;
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(3,1fr)",
-        gap: 14,
-        marginBottom: 16,
-      }}
-    >
+    <div className="summary-cards-grid">
       <Card
         label="Total balance"
         value={balance}

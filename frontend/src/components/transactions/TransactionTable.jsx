@@ -73,6 +73,119 @@ function PaginationButton({ onClick, disabled, active, children }) {
   );
 }
 
+/* ── Mobile card row ────────────────────────────────────────────── */
+function MobileTransactionCard({ txn, onEdit, onDelete, role }) {
+  const { dark } = useTheme();
+  const accent = dark ? "#6EE7B7" : "#059669";
+  const red = dark ? "#F87171" : "#DC2626";
+  const isIncome = txn.type === "income";
+
+  return (
+    <div
+      style={{
+        padding: "14px 16px",
+        borderBottom: "0.5px solid var(--border)",
+        display: "flex",
+        alignItems: "center",
+        gap: 12,
+      }}
+    >
+      {/* Icon */}
+      <div
+        style={{
+          width: 36,
+          height: 36,
+          borderRadius: 10,
+          flexShrink: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: 14,
+          background: isIncome ? "var(--accent-bg)" : "var(--red-bg)",
+          color: isIncome ? accent : red,
+        }}
+      >
+        {isIncome ? "↑" : "↓"}
+      </div>
+
+      {/* Description + category */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div
+          style={{
+            fontSize: 13,
+            color: "var(--text)",
+            fontWeight: 500,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            marginBottom: 4,
+          }}
+        >
+          {txn.description}
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <CategoryBadge category={txn.category} />
+          <span style={{ fontSize: 11, color: "var(--text3)" }}>
+            {formatDate(txn.date)}
+          </span>
+        </div>
+      </div>
+
+      {/* Amount + actions */}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-end",
+          gap: 6,
+          flexShrink: 0,
+        }}
+      >
+        <div
+          style={{
+            fontSize: 13,
+            fontWeight: 600,
+            color: isIncome ? accent : red,
+          }}
+        >
+          {isIncome ? "+" : "−"}
+          {formatINR(txn.amount)}
+        </div>
+        {role === "admin" && (
+          <div style={{ display: "flex", gap: 10 }}>
+            <button
+              onClick={() => onEdit(txn)}
+              style={{
+                background: "transparent",
+                border: "none",
+                fontSize: 12,
+                color: "var(--text3)",
+                cursor: "pointer",
+                padding: 0,
+              }}
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => onDelete(txn)}
+              style={{
+                background: "transparent",
+                border: "none",
+                fontSize: 12,
+                color: "var(--text3)",
+                cursor: "pointer",
+                padding: 0,
+              }}
+            >
+              Del
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function TransactionTable({ embedded = false }) {
   const {
     getFilteredTransactions,
@@ -90,7 +203,6 @@ export default function TransactionTable({ embedded = false }) {
   const txns = getFilteredTransactions();
   const totalPages = Math.max(1, Math.ceil(txns.length / PAGE_SIZE));
 
-  // Reset to page 1 whenever filters/sort change
   useEffect(() => {
     setPage(1);
   }, [
@@ -142,7 +254,6 @@ export default function TransactionTable({ embedded = false }) {
     </div>
   );
 
-  // Smart page number list with ellipsis
   const getPageNumbers = () => {
     if (totalPages <= 7)
       return Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -165,7 +276,7 @@ export default function TransactionTable({ embedded = false }) {
       style={{
         fontSize: 12,
         color: "var(--text3)",
-        padding: embedded ? "10px 18px 0" : "0 0 10px",
+        padding: embedded ? "10px 18px 0" : "10px 18px",
       }}
     >
       {txns.length} transaction{txns.length !== 1 ? "s" : ""}
@@ -178,8 +289,10 @@ export default function TransactionTable({ embedded = false }) {
     </div>
   );
 
+  /* Desktop table header */
   const tableHeader = (
     <div
+      className="txn-table-header"
       style={{
         display: "grid",
         gridTemplateColumns: COL,
@@ -216,145 +329,190 @@ export default function TransactionTable({ embedded = false }) {
     </div>
   );
 
-  const rows =
-    txns.length === 0 ? (
-      <EmptyState
-        title="No transactions found"
-        message="Try adjusting your filters or search."
-        icon={
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <circle
-              cx="9"
-              cy="9"
-              r="6"
-              stroke="var(--text3)"
-              strokeWidth="1.5"
-            />
-            <path
-              d="M14 14L17 17"
-              stroke="var(--text3)"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-            />
-          </svg>
-        }
-      />
-    ) : (
-      paginated.map((txn, i) => (
-        <div
-          key={txn.id}
-          style={{
-            display: "grid",
-            gridTemplateColumns: COL,
-            padding: "11px 18px",
-            alignItems: "center",
-            borderBottom:
-              i < paginated.length - 1 ? "0.5px solid var(--border)" : "none",
-            transition: "background 0.15s",
-          }}
-          onMouseEnter={(e) =>
-            (e.currentTarget.style.background = "var(--card2)")
+  /* Desktop table rows */
+  const desktopRows = (
+    <div className="txn-table-body">
+      {txns.length === 0 ? (
+        <EmptyState
+          title="No transactions found"
+          message="Try adjusting your filters or search."
+          icon={
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <circle
+                cx="9"
+                cy="9"
+                r="6"
+                stroke="var(--text3)"
+                strokeWidth="1.5"
+              />
+              <path
+                d="M14 14L17 17"
+                stroke="var(--text3)"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+            </svg>
           }
-          onMouseLeave={(e) =>
-            (e.currentTarget.style.background = "transparent")
-          }
-        >
+        />
+      ) : (
+        paginated.map((txn, i) => (
           <div
+            key={txn.id}
             style={{
-              display: "flex",
+              display: "grid",
+              gridTemplateColumns: COL,
+              padding: "11px 18px",
               alignItems: "center",
-              gap: 10,
-              minWidth: 0,
+              borderBottom:
+                i < paginated.length - 1 ? "0.5px solid var(--border)" : "none",
+              transition: "background 0.15s",
             }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.background = "var(--card2)")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.background = "transparent")
+            }
           >
             <div
               style={{
-                width: 30,
-                height: 30,
-                borderRadius: 9,
-                flexShrink: 0,
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center",
-                fontSize: 12,
-                background:
-                  txn.type === "income" ? "var(--accent-bg)" : "var(--red-bg)",
+                gap: 10,
+                minWidth: 0,
+              }}
+            >
+              <div
+                style={{
+                  width: 30,
+                  height: 30,
+                  borderRadius: 9,
+                  flexShrink: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 12,
+                  background:
+                    txn.type === "income"
+                      ? "var(--accent-bg)"
+                      : "var(--red-bg)",
+                  color: txn.type === "income" ? accent : red,
+                }}
+              >
+                {txn.type === "income" ? "↑" : "↓"}
+              </div>
+              <span
+                style={{
+                  fontSize: 13,
+                  color: "var(--text)",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {txn.description}
+              </span>
+            </div>
+            <div>
+              <CategoryBadge category={txn.category} />
+            </div>
+            <div style={{ fontSize: 12, color: "var(--text2)" }}>
+              {formatDate(txn.date)}
+            </div>
+            <div
+              style={{
+                fontSize: 13,
+                fontWeight: 500,
                 color: txn.type === "income" ? accent : red,
               }}
             >
-              {txn.type === "income" ? "↑" : "↓"}
+              {txn.type === "income" ? "+" : "−"}
+              {formatINR(txn.amount)}
             </div>
-            <span
-              style={{
-                fontSize: 13,
-                color: "var(--text)",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
-            >
-              {txn.description}
-            </span>
+            {role === "admin" && (
+              <div style={{ display: "flex", gap: 10 }}>
+                <button
+                  onClick={() => setEditing(txn)}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    fontSize: 12,
+                    color: "var(--text3)",
+                    cursor: "pointer",
+                    padding: 0,
+                    transition: "color 0.15s",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = accent)}
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.color = "var(--text3)")
+                  }
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => setDeleting(txn)}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    fontSize: 12,
+                    color: "var(--text3)",
+                    cursor: "pointer",
+                    padding: 0,
+                    transition: "color 0.15s",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = red)}
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.color = "var(--text3)")
+                  }
+                >
+                  Del
+                </button>
+              </div>
+            )}
           </div>
-          <div>
-            <CategoryBadge category={txn.category} />
-          </div>
-          <div style={{ fontSize: 12, color: "var(--text2)" }}>
-            {formatDate(txn.date)}
-          </div>
-          <div
-            style={{
-              fontSize: 13,
-              fontWeight: 500,
-              color: txn.type === "income" ? accent : red,
-            }}
-          >
-            {txn.type === "income" ? "+" : "−"}
-            {formatINR(txn.amount)}
-          </div>
-          {role === "admin" && (
-            <div style={{ display: "flex", gap: 10 }}>
-              <button
-                onClick={() => setEditing(txn)}
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  fontSize: 12,
-                  color: "var(--text3)",
-                  cursor: "pointer",
-                  padding: 0,
-                  transition: "color 0.15s",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = accent)}
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.color = "var(--text3)")
-                }
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => setDeleting(txn)}
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  fontSize: 12,
-                  color: "var(--text3)",
-                  cursor: "pointer",
-                  padding: 0,
-                  transition: "color 0.15s",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = red)}
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.color = "var(--text3)")
-                }
-              >
-                Del
-              </button>
-            </div>
-          )}
-        </div>
-      ))
-    );
+        ))
+      )}
+    </div>
+  );
+
+  /* Mobile card list */
+  const mobileRows = (
+    <div className="txn-mobile-body">
+      {txns.length === 0 ? (
+        <EmptyState
+          title="No transactions found"
+          message="Try adjusting your filters or search."
+          icon={
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <circle
+                cx="9"
+                cy="9"
+                r="6"
+                stroke="var(--text3)"
+                strokeWidth="1.5"
+              />
+              <path
+                d="M14 14L17 17"
+                stroke="var(--text3)"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+            </svg>
+          }
+        />
+      ) : (
+        paginated.map((txn) => (
+          <MobileTransactionCard
+            key={txn.id}
+            txn={txn}
+            role={role}
+            onEdit={setEditing}
+            onDelete={setDeleting}
+          />
+        ))
+      )}
+    </div>
+  );
 
   const pagination = totalPages > 1 && (
     <div
@@ -368,7 +526,6 @@ export default function TransactionTable({ embedded = false }) {
         flexWrap: "wrap",
       }}
     >
-      {/* Range label */}
       <span
         style={{ fontSize: 12, color: "var(--text3)", whiteSpace: "nowrap" }}
       >
@@ -382,7 +539,6 @@ export default function TransactionTable({ embedded = false }) {
         </span>
       </span>
 
-      {/* Page controls */}
       <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
         <PaginationButton
           onClick={() => setPage((p) => p - 1)}
@@ -440,7 +596,8 @@ export default function TransactionTable({ embedded = false }) {
     <>
       {countLabel}
       {tableHeader}
-      {rows}
+      {desktopRows}
+      {mobileRows}
       {pagination}
     </>
   );

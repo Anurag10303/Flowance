@@ -93,3 +93,134 @@ input, select, textarea, button { font-family: inherit; outline: none; }
   filter: blur(80px);
   pointer-events: none;
 }
+
+/* ─────────────────────────────────────────────
+   RESPONSIVE LAYOUT
+   Breakpoint: 768px = mobile
+────────────────────────────────────────────── */
+
+/* Summary cards: 3-col on desktop, 1-col on mobile */
+.summary-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+/* Desktop sidebar: always visible */
+.sidebar-desktop {
+  display: flex;
+}
+
+/* Mobile sidebar: hidden by default, shown as drawer via JS */
+.sidebar-mobile {
+  display: none;
+}
+
+/* Hamburger: hidden on desktop */
+.mobile-menu-btn {
+  display: none;
+}
+
+/* Transaction table: desktop grid shown, mobile cards hidden */
+.txn-table-header { display: grid; }
+.txn-table-body   { display: block; }
+.txn-mobile-body  { display: none; }
+
+/* Header search: full width on desktop */
+.header-search input {
+  width: 160px;
+}
+
+/* Export button label: always shown on desktop */
+.export-label {
+  display: inline;
+}
+
+/* Main content padding */
+main {
+  padding: 22px 26px !important;
+}
+
+/* ── Mobile breakpoint ────────────────────────── */
+@media (max-width: 768px) {
+  /* Hide desktop sidebar, show mobile drawer */
+  .sidebar-desktop {
+    display: none;
+  }
+  .sidebar-mobile {
+    display: flex;
+  }
+
+  /* Show hamburger in header */
+  .mobile-menu-btn {
+    display: flex;
+  }
+
+  /* Summary cards: single column stack */
+  .summary-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  /* Reduce card padding slightly */
+  .summary-card {
+    padding: 16px 18px !important;
+  }
+
+  /* Hide desktop table header & rows, show mobile cards */
+  .txn-table-header { display: none !important; }
+  .txn-table-body   { display: none !important; }
+  .txn-mobile-body  { display: block !important; }
+
+  /* Header search: narrower on mobile */
+  .header-search input {
+    width: 120px;
+  }
+
+  /* Hide "Export CSV" text label, show only icon on very small screens */
+  .export-label {
+    display: none;
+  }
+
+  /* Reduce header and main padding on mobile */
+  header {
+    padding: 0 12px !important;
+  }
+
+  main {
+    padding: 14px 14px !important;
+    /* extra bottom room so content doesn't clip behind browser chrome */
+    padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  /* Recharts: prevent overflow on small screens */
+  .recharts-wrapper,
+  .recharts-surface {
+    max-width: 100% !important;
+    overflow: hidden;
+  }
+
+  /* Filter bar: allow wrapping on mobile */
+  .filter-bar {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+/* ── Extra-small screens (< 480px) ─────────────── */
+@media (max-width: 480px) {
+  .summary-cards-grid {
+    gap: 8px;
+  }
+
+  /* Pagination: shrink page numbers */
+  .pagination-pages {
+    gap: 2px;
+  }
+
+  /* Header search: even narrower, or hidden when keyboard opens */
+  .header-search input {
+    width: 100px;
+  }
+}

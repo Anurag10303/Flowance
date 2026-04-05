@@ -1,9 +1,12 @@
 import { useLocation } from "react-router-dom";
+import { useState } from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 
 export default function Layout({ children }) {
   const location = useLocation();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
     <div
       style={{
@@ -14,7 +17,42 @@ export default function Layout({ children }) {
         transition: "background 0.3s",
       }}
     >
-      <Sidebar />
+      {/* Desktop sidebar */}
+      <div className="sidebar-desktop">
+        <Sidebar />
+      </div>
+
+      {/* Mobile sidebar drawer overlay */}
+      {sidebarOpen && (
+        <div
+          className="sidebar-overlay"
+          onClick={() => setSidebarOpen(false)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.5)",
+            zIndex: 99,
+          }}
+        />
+      )}
+
+      {/* Mobile sidebar drawer */}
+      <div
+        className="sidebar-mobile"
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          height: "100vh",
+          zIndex: 100,
+          transform: sidebarOpen ? "translateX(0)" : "translateX(-100%)",
+          transition: "transform 0.3s cubic-bezier(0.16,1,0.3,1)",
+        }}
+      >
+        <Sidebar onClose={() => setSidebarOpen(false)} />
+      </div>
+
+      {/* Main content area */}
       <div
         style={{
           flex: 1,
@@ -24,7 +62,7 @@ export default function Layout({ children }) {
           minWidth: 0,
         }}
       >
-        <Header />
+        <Header onMenuClick={() => setSidebarOpen((v) => !v)} />
         <main
           key={location.pathname}
           className="page-enter"
@@ -34,6 +72,8 @@ export default function Layout({ children }) {
             padding: "22px 26px",
             background: "var(--bg)",
             transition: "background 0.3s",
+            /* bottom padding for mobile bottom nav */
+            paddingBottom: "calc(22px + env(safe-area-inset-bottom, 0px))",
           }}
         >
           {children}

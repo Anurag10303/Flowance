@@ -46,7 +46,7 @@ const NAV = [
   },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ onClose }) {
   const { role, setRole } = useFinanceStore();
   const { dark, toggle } = useTheme();
   const navigate = useNavigate();
@@ -73,27 +73,60 @@ export default function Sidebar() {
         transition: "background 0.3s",
       }}
     >
-      {/* Logo */}
+      {/* Logo row — includes close button on mobile */}
       <div
-        onClick={() => navigate("/")}
         style={{
           padding: "20px 20px 18px",
           borderBottom: `0.5px solid ${bdr}`,
-          cursor: "pointer",
-          userSelect: "none",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
         }}
       >
         <span
+          onClick={() => {
+            navigate("/");
+            onClose?.();
+          }}
           style={{
             fontFamily: "Syne, sans-serif",
             fontWeight: 800,
             fontSize: 18,
             color: txt,
             letterSpacing: "-0.5px",
+            cursor: "pointer",
+            userSelect: "none",
           }}
         >
           Flow<span style={{ color: accent }}>ance</span>
         </span>
+
+        {/* Close button — only visible on mobile (via CSS class) */}
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="sidebar-close-btn"
+            style={{
+              background: "transparent",
+              border: "none",
+              color: muted,
+              cursor: "pointer",
+              padding: 4,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path
+                d="M4 4l10 10M14 4L4 14"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+            </svg>
+          </button>
+        )}
       </div>
 
       {/* Nav links */}
@@ -102,6 +135,7 @@ export default function Sidebar() {
           <NavLink
             key={to}
             to={to}
+            onClick={onClose}
             style={({ isActive }) => ({
               display: "flex",
               alignItems: "center",

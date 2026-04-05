@@ -9,7 +9,7 @@ const TITLES = {
   "/insights": "Insights",
 };
 
-export default function Header() {
+export default function Header({ onMenuClick }) {
   const location = useLocation();
   const { filters, setFilter, role, getFilteredTransactions } =
     useFinanceStore();
@@ -25,7 +25,7 @@ export default function Header() {
   return (
     <header
       style={{
-        padding: "0 24px",
+        padding: "0 16px",
         height: 56,
         borderBottom: `0.5px solid ${bdr}`,
         display: "flex",
@@ -33,26 +33,60 @@ export default function Header() {
         justifyContent: "space-between",
         background: bg,
         flexShrink: 0,
-        gap: 12,
+        gap: 10,
         transition: "background 0.3s",
       }}
     >
-      <span
-        style={{
-          fontFamily: "Syne, sans-serif",
-          fontWeight: 800,
-          fontSize: 17,
-          color: txt,
-          letterSpacing: "-0.3px",
-          whiteSpace: "nowrap",
-        }}
+      <div
+        style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}
       >
-        {TITLES[location.pathname] || "Flowance"}
-      </span>
+        {/* Hamburger — only visible on mobile via CSS */}
+        <button
+          onClick={onMenuClick}
+          className="mobile-menu-btn"
+          style={{
+            background: "transparent",
+            border: "none",
+            color: muted,
+            cursor: "pointer",
+            padding: 4,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+          }}
+        >
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path
+              d="M3 5h14M3 10h14M3 15h14"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
+          </svg>
+        </button>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <span
+          style={{
+            fontFamily: "Syne, sans-serif",
+            fontWeight: 800,
+            fontSize: 17,
+            color: txt,
+            letterSpacing: "-0.3px",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {TITLES[location.pathname] || "Flowance"}
+        </span>
+      </div>
+
+      <div
+        style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}
+      >
         {location.pathname === "/transactions" && (
-          <div style={{ position: "relative" }}>
+          <div style={{ position: "relative" }} className="header-search">
             <svg
               width="14"
               height="14"
@@ -93,7 +127,7 @@ export default function Header() {
                 fontSize: 13,
                 color: txt,
                 fontFamily: "DM Sans, sans-serif",
-                width: 180,
+                width: 160,
                 outline: "none",
                 transition: "all 0.2s",
               }}
@@ -112,6 +146,7 @@ export default function Header() {
         {role === "admin" && (
           <button
             onClick={() => exportToCSV(getFilteredTransactions())}
+            className="header-export-btn"
             style={{
               display: "flex",
               alignItems: "center",
@@ -152,7 +187,7 @@ export default function Header() {
                 strokeLinecap="round"
               />
             </svg>
-            Export CSV
+            <span className="export-label">Export CSV</span>
           </button>
         )}
 
