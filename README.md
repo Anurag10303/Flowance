@@ -471,7 +471,7 @@ No environment variables required. The app is entirely client-side with no backe
 
 ## Author
 
-Built by [Your Name] for the Frontend Developer Intern assignment.
-Submitted: April 2025
+Built by Anurag Singh for the Frontend Developer Intern assignment.
+Submitted: April 2026
 
 ---
